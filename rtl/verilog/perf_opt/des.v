@@ -208,7 +208,6 @@ always @(posedge clk)
 always @(posedge clk)
         R15 <= #1 L14 ^ out15;
 
-
 // Perform the initial permutationi with the registerd desIn
 assign IP[1:64] = {	desIn_r[06], desIn_r[14], desIn_r[22], desIn_r[30], desIn_r[38], desIn_r[46],
 			desIn_r[54], desIn_r[62], desIn_r[04], desIn_r[12], desIn_r[20], desIn_r[28],

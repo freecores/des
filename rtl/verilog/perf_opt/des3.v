@@ -1,14 +1,14 @@
 /////////////////////////////////////////////////////////////////////
 ////                                                             ////
-////  CRP                                                        ////
-////  DES Crypt Module                                           ////
+////  Tripple DES                                                ////
+////  Tripple DES Top Level module                               ////
 ////                                                             ////
 ////  Author: Rudolf Usselmann                                   ////
 ////          rudi@asics.ws                                      ////
 ////                                                             ////
 /////////////////////////////////////////////////////////////////////
 ////                                                             ////
-//// Copyright (C) 2001 Rudolf Usselmann                         ////
+//// Copyright (C) 2002 Rudolf Usselmann                         ////
 ////                    rudi@asics.ws                            ////
 ////                                                             ////
 //// This source file may be used and distributed without        ////
@@ -32,38 +32,48 @@
 ////                                                             ////
 /////////////////////////////////////////////////////////////////////
 
-module  crp(P, R, K_sub);
-output	[1:32]	P;
-input	[1:32]	R;
-input	[1:48]	K_sub;
+module des3(desOut, desIn, key1, key2, key3, decrypt, clk); 
+output	[63:0]	desOut;
+input	[63:0]	desIn;
+input	[55:0]	key1;
+input	[55:0]	key2;
+input	[55:0]	key3;
+input		decrypt;
+input		clk;
 
-wire	[1:48] E;
-wire	[1:48] X;
-wire	[1:32] S;
+wire	[55:0]	key_a;
+wire	[55:0]	key_b;
+wire	[55:0]	key_c;
+wire	[63:0]	stage1_out, stage2_out;
+reg	[55:0]	key_b_r [16:0];
+reg	[55:0]	key_c_r [33:0];
+integer		i;
 
-assign E[1:48] = {	R[32], R[1], R[2], R[3], R[4], R[5], R[4], R[5],
-			R[6], R[7], R[8], R[9], R[8], R[9], R[10], R[11],
-			R[12], R[13], R[12], R[13], R[14], R[15], R[16],
-			R[17], R[16], R[17], R[18], R[19], R[20], R[21],
-			R[20], R[21], R[22], R[23], R[24], R[25], R[24],
-			R[25], R[26], R[27], R[28], R[29], R[28], R[29],
-			R[30], R[31], R[32], R[1]};
+assign key_a = decrypt ? key3 : key1;
+assign key_b = key2;
+assign key_c = decrypt ? key1 : key3;
 
-assign X = E ^ K_sub;
+always @(posedge clk)
+	key_b_r[0] <= #1 key_b;
 
-sbox1 u0( .addr(X[01:06]), .dout(S[01:04]) );
-sbox2 u1( .addr(X[07:12]), .dout(S[05:08]) );
-sbox3 u2( .addr(X[13:18]), .dout(S[09:12]) );
-sbox4 u3( .addr(X[19:24]), .dout(S[13:16]) );
-sbox5 u4( .addr(X[25:30]), .dout(S[17:20]) );
-sbox6 u5( .addr(X[31:36]), .dout(S[21:24]) );
-sbox7 u6( .addr(X[37:42]), .dout(S[25:28]) );
-sbox8 u7( .addr(X[43:48]), .dout(S[29:32]) );
+always @(posedge clk)
+	for(i=0;i<16;i=i+1)
+		key_b_r[i+1] <= #1 key_b_r[i];
 
-assign P[1:32] = {	S[16], S[7], S[20], S[21], S[29], S[12], S[28],
-			S[17], S[1], S[15], S[23], S[26], S[5], S[18],
-			S[31], S[10], S[2], S[8], S[24], S[14], S[32],
-			S[27], S[3], S[9], S[19], S[13], S[30], S[6],
-			S[22], S[11], S[4], S[25]};
+
+always @(posedge clk)
+	key_c_r[0] <= #1 key_c;
+
+always @(posedge clk)
+	for(i=0;i<33;i=i+1)
+		key_c_r[i+1] <= #1 key_c_r[i];
+
+des u0(	.desOut(stage1_out),	.desIn(desIn),		.key(key_a), .decrypt(decrypt), .clk(clk) );
+
+des u1(	.desOut(stage2_out),	.desIn(stage1_out),	.key(key_b_r[16]), .decrypt(!decrypt), .clk(clk) );
+
+des u2(	.desOut(desOut),	.desIn(stage2_out),	.key(key_c_r[33]), .decrypt(decrypt),	.clk(clk) );
 
 endmodule
+
+

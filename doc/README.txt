@@ -32,6 +32,35 @@
 /////////////////////////////////////////////////////////////////////
 
 
+
+Triple DES Core
+===============
+Attached is a Triple DES core implementation in verilog. It takes
+three standard 56 bit keys and 64 bits of data as input and generates
+a 64 bit encrypted/decrypted result. Two implementations are provided:
+
+1) Area Optimized (CBC Mode)
+   This is a sequential implementation and needs 48 cycles to complete
+   a full encryption/decryption cycle.
+
+
+2) Performance Optimized (EBC Mode)
+   This is a pipelined implementation that has a 48 cycle pipeline
+   (plus 1 input and 1 output register). It can perform a complete
+   encryption/decryption every cycle.
+
+Performance
+===========
+1) Area Optimized (CBC Mode)
+   0.18u UMC ASIC process: 5.5K gates, > 160 Mhz
+   Spartan IIe 100-6 : 1450 LUTs (about 60%), 88MHz
+
+2) Performance Optimized (EBC Mode)
+   0.18u UMC ASIC process: 55K Gates, 300MHz (19.2 Gbits/sec)
+   Virtex-II-1500-6: 79% utilization, 166Mhz (10.6 Gbits/sec)
+
+
+
 DES Core
 ========
 Attached is a DES core implementation in verilog. It takes a standard
@@ -62,8 +91,10 @@ Performance
    Altera FLEX 10K130E-1: 6485 lcells >76 Mhz
 
 
+
 Status
 ======
+31-Oct-2002	Added Triple DES
 05-Oct-2001	Added decrypt input (Thanks to Mark Cynar for
                 providing the code)
 		Reorganized directory structure

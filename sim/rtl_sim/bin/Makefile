@@ -21,8 +21,17 @@ _TARGETS_COM_=	$(DUT_SRC_DIR)/common/crp.v		\
 _TARGETS_AO_=	$(DUT_SRC_DIR)/area_opt/des.v		\
 		$(DUT_SRC_DIR)/area_opt/key_sel.v 
 
+_TARGETS_AO3_=	$(DUT_SRC_DIR)/area_opt/des3.v		\
+		$(DUT_SRC_DIR)/area_opt/key_sel3.v 
+
+
 _TARGETS_PO_=	$(DUT_SRC_DIR)/perf_opt/des.v		\
 		$(DUT_SRC_DIR)/perf_opt/key_sel.v 
+
+_TARGETS_PO3_=	$(DUT_SRC_DIR)/perf_opt/des3.v		\
+		$(DUT_SRC_DIR)/perf_opt/des.v		\
+		$(DUT_SRC_DIR)/perf_opt/key_sel.v 
+
 
 ##########################################################################
 #
@@ -33,7 +42,11 @@ TB_SRC_DIR=../../../bench/verilog
 
 _TB_PO_=	$(TB_SRC_DIR)/des_test_po.v
 
+_TB_PO3_=	$(TB_SRC_DIR)/des3_test_po.v
+
 _TB_AO_=	$(TB_SRC_DIR)/des_test_ao.v
+
+_TB_AO3_=	$(TB_SRC_DIR)/des3_test_ao.v
 
 
 ##########################################################################
@@ -81,6 +94,37 @@ simao:
 		$(INCDIR)				\
 		$(_TARGETS_COM_) $(_TARGETS_AO_)	\
 		$(_TB_AO_)
+
+
+simpow3:
+	@$(MAKE) simpo3 WAVES="+access+r +define+WAVES "
+
+simpo3:
+	@echo ""
+	@echo "----- Running NCVLOG ... ----------"
+	ncverilog					\
+		$(LOGF)					\
+		$(WAVES)				\
+		$(INCDIR)				\
+		$(_TARGETS_COM_) $(_TARGETS_PO3_)	\
+		$(_TB_PO3_)
+
+simaow3:
+	@$(MAKE) simao3 WAVES="+define+WAVES +access+r "
+
+
+simao3:
+	@echo ""
+	@echo "----- Running NCVLOG ... ----------"
+	ncverilog					\
+		$(LOGF)					\
+		$(WAVES)				\
+		$(INCDIR)				\
+		$(_TARGETS_COM_) $(_TARGETS_AO3_)	\
+		$(_TB_AO3_)
+
+
+
 
 
 clean:
