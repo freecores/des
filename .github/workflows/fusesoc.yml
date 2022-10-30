@@ -1,0 +1,78 @@
+name: run-fusesoc-targets
+on: [push]
+
+jobs:
+  build-openlane-sky130-des-po:
+    runs-on: ubuntu-latest
+    env:
+      REPO : des
+      VLNV : asics.ws::des
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          path: des
+      - run: echo "EDALIZE_LAUNCHER=el_docker" >> $GITHUB_ENV
+      - run: pip3 install fusesoc
+      - run: fusesoc library add $REPO $GITHUB_WORKSPACE/$REPO
+      - run: fusesoc run --target=des_po_sky130 $VLNV
+
+  build-openlane-sky130-des3-po:
+    runs-on: ubuntu-latest
+    env:
+      REPO : des
+      VLNV : asics.ws::des
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          path: des
+      - run: echo "EDALIZE_LAUNCHER=el_docker" >> $GITHUB_ENV
+      - run: pip3 install fusesoc
+      - run: fusesoc library add $REPO $GITHUB_WORKSPACE/$REPO
+      - run: fusesoc run --target=des3_po_sky130 $VLNV
+
+  lint-verilator-des-po:
+    runs-on: ubuntu-latest
+    env:
+      REPO : des
+      VLNV : asics.ws::des
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          path: des
+      - run: sudo apt install verilator
+      - run: pip3 install fusesoc
+      - run: fusesoc library add $REPO $GITHUB_WORKSPACE/$REPO
+      - run: fusesoc run --target=lint_po $VLNV
+
+  sim-icarus-des-po:
+    runs-on: ubuntu-latest
+    env:
+      REPO : des
+      VLNV : asics.ws::des
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          path: des
+      - run: sudo apt install iverilog
+      - run: pip3 install fusesoc
+      - run: fusesoc library add $REPO $GITHUB_WORKSPACE/$REPO
+      - run: fusesoc run --target=des_test_po $VLNV
+
+  sim-icarus-des3-po:
+    runs-on: ubuntu-latest
+    env:
+      REPO : des
+      VLNV : asics.ws::des
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          path: des
+      - run: sudo apt install iverilog
+      - run: pip3 install fusesoc
+      - run: fusesoc library add $REPO $GITHUB_WORKSPACE/$REPO
+      - run: fusesoc run --target=des3_test_po $VLNV

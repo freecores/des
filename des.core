@@ -1,0 +1,89 @@
+CAPI=2:
+
+name : asics.ws::des:0
+
+filesets:
+  common:
+    files:
+      - rtl/verilog/common/sbox3.v
+      - rtl/verilog/common/sbox4.v
+      - rtl/verilog/common/sbox5.v
+      - rtl/verilog/common/sbox2.v
+      - rtl/verilog/common/sbox7.v
+      - rtl/verilog/common/sbox8.v
+      - rtl/verilog/common/crp.v
+      - rtl/verilog/common/sbox6.v
+      - rtl/verilog/common/sbox1.v
+    file_type : verilogSource
+
+  perf_opt:
+    files:
+      - rtl/verilog/perf_opt/key_sel.v
+      - rtl/verilog/perf_opt/des.v
+      - rtl/verilog/perf_opt/des3.v
+    file_type : verilogSource
+
+  area_opt:
+    files:
+      - rtl/verilog/area_opt/key_sel.v
+      - rtl/verilog/area_opt/key_sel3.v
+      - rtl/verilog/area_opt/des.v
+      - rtl/verilog/area_opt/des3.v
+    file_type : verilogSource
+
+  des_test_po:
+    files: [bench/verilog/des_test_po.v : {file_type : verilogSource}]
+
+  des3_test_po:
+    files: [bench/verilog/des3_test_po.v : {file_type : verilogSource}]
+
+  des_test_ao:
+    files: [bench/verilog/des_test_ao.v : {file_type : verilogSource}]
+
+  des3_test_ao:
+    files: [bench/verilog/des3_test_ao.v : {file_type : verilogSource}]
+
+  sky130:
+    files: [data/sky130.tcl : {file_type : tclSource}]
+    
+targets:
+  default:
+    filesets : [common, perf_opt, area_opt]
+
+  lint_po:
+    default_tool: verilator
+    filesets : [common, perf_opt]
+    tools:
+      verilator:
+        mode: lint-only
+    toplevel : des3
+
+  des_test_po:
+    default_tool : icarus
+    filesets: [common, perf_opt, des_test_po]
+    toplevel : test
+  
+  des3_test_po:
+    default_tool : icarus
+    filesets: [common, perf_opt, des3_test_po]
+    toplevel : test
+  
+  des_test_ao:
+    default_tool : icarus
+    filesets: [common, perf_opt, des_test_ao]
+    toplevel : test
+  
+  des3_test_ao:
+    default_tool : icarus
+    filesets: [common, perf_opt, des3_test_ao]
+    toplevel : test
+
+  des_po_sky130:
+    default_tool : openlane
+    filesets: [common, perf_opt, sky130]
+    toplevel : des
+
+  des3_po_sky130:
+    default_tool : openlane
+    filesets: [common, perf_opt, sky130]
+    toplevel : des3
